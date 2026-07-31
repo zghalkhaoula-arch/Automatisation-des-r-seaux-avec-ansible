@@ -16,7 +16,7 @@ Automatisation de la configuration et du routage dynamique OSPF sur une infrastr
 - [Résultats](#résultats)
 - [Problèmes rencontrés et résolutions](#problèmes-rencontrés-et-résolutions)
 - [Pistes d'amélioration](#pistes-damélioration)
-- [Auteur](#auteur)
+
 
 ---
 
@@ -131,6 +131,3 @@ Cette approche évite la duplication de fichiers de configuration statiques et p
 - Mise en place de règles de filtrage (ACL) entre sous-réseaux
 - Extension à un scénario BGP en complément d'OSPF
 
-## Auteur
-
-Khaoula Zghal — Étudiante en Génie des Télécommunications, ENET'Com
