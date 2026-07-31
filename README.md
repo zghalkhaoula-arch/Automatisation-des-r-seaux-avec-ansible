@@ -1,27 +1,55 @@
-Labo réseau automatisé — Ansible, FRRouting & Containerlab
+# Labo réseau automatisé — Ansible, FRRouting & Containerlab
 
 Automatisation de la configuration et du routage dynamique OSPF sur une infrastructure réseau virtualisée, selon une approche NetDevOps.
 
+---
+
+## Table des matières
+
+- [Contexte](#contexte)
+- [Architecture](#architecture)
+- [Stack technique](#stack-technique)
+- [Structure du dépôt](#structure-du-dépôt)
+- [Prérequis](#prérequis)
+- [Installation et utilisation](#installation-et-utilisation)
+- [Approche technique](#approche-technique)
+- [Résultats](#résultats)
+- [Problèmes rencontrés et résolutions](#problèmes-rencontrés-et-résolutions)
+- [Pistes d'amélioration](#pistes-damélioration)
+- [Auteur](#auteur)
+
+---
+
+## Contexte
+
 Ce projet applique les principes d'Infrastructure as Code (IaC) et de NetDevOps à un environnement réseau simulé. Il couvre l'ensemble du cycle : déploiement d'une topologie réseau virtualisée, configuration automatisée du routage dynamique OSPF, vérification de l'état du réseau et sauvegarde des configurations — sans intervention manuelle sur les équipements.
 
-Architecture
+## Architecture
+
+```
 router1 ────── router2 ────── router3
               (intermédiaire)
 
   eth1                eth1  eth2              eth1
 192.168.100.10   192.168.100.11  192.168.101.11   192.168.101.12
    └──────── 192.168.100.0/24 ────┘  └──── 192.168.101.0/24 ────┘
+```
 
 Trois routeurs FRRouting, déployés en conteneurs via Containerlab et interconnectés par des liens virtuels, hébergés dans WSL2 (Ubuntu) avec Docker Engine natif.
 
-Stack technique
-Composant	Rôle
-Containerlab	Déploiement et câblage de la topologie réseau
-Docker Engine (natif, WSL2)	Exécution des conteneurs routeurs
-FRRouting (FRR)	Système de routage — OSPF
-Ansible	Automatisation de la configuration et de la vérification
-Jinja2	Génération dynamique des configurations FRR
-Structure du dépôt
+## Stack technique
+
+| Composant | Rôle |
+|---|---|
+| Containerlab | Déploiement et câblage de la topologie réseau |
+| Docker Engine (natif, WSL2) | Exécution des conteneurs routeurs |
+| FRRouting (FRR) | Système de routage — OSPF |
+| Ansible | Automatisation de la configuration et de la vérification |
+| Jinja2 | Génération dynamique des configurations FRR |
+
+## Structure du dépôt
+
+```
 .
 ├── Dockerfile                 # Image FRR personnalisée
 ├── topology.clab.yml          # Définition de la topologie Containerlab
@@ -38,56 +66,71 @@ Structure du dépôt
     ├── config.yml             # Génère et déploie la configuration, active OSPF
     ├── verify.yml             # Vérifie l'état du réseau
     └── backup.yml             # Sauvegarde horodatée des configurations
-Prérequis
-Windows avec WSL2 (Ubuntu), systemd actif
-Docker Engine natif installé dans WSL2
-Containerlab
-Ansible
-Installation et utilisation
+```
 
-Déployer la topologie
+## Prérequis
 
-bash
+- Windows avec WSL2 (Ubuntu), systemd actif
+- Docker Engine natif installé dans WSL2
+- [Containerlab](https://containerlab.dev)
+- Ansible
+
+## Installation et utilisation
+
+**Déployer la topologie**
+```bash
 sudo containerlab deploy -t topology.clab.yml
+```
 
-Déployer la configuration OSPF
-
-bash
+**Déployer la configuration OSPF**
+```bash
 ansible-playbook -i inventory.ini playbooks/config.yml
+```
 
-Vérifier l'état du réseau
-
-bash
+**Vérifier l'état du réseau**
+```bash
 ansible-playbook -i inventory.ini playbooks/verify.yml
+```
 
-Sauvegarder les configurations
-
-bash
+**Sauvegarder les configurations**
+```bash
 ansible-playbook -i inventory.ini playbooks/backup.yml
+```
 
-Détruire le labo
-
-bash
+**Détruire le labo**
+```bash
 sudo containerlab destroy -t topology.clab.yml --cleanup
-Approche technique
+```
 
-La configuration de chaque routeur est générée dynamiquement à partir d'un template Jinja2 unique combiné aux variables propres à chaque hôte (adresse IP, router-id, réseaux annoncés en OSPF). Ansible déploie ensuite cette configuration et redémarre le service FRR.
+## Approche technique
+
+La configuration de chaque routeur est générée dynamiquement à partir d'un template Jinja2 unique combiné aux variables propres à chaque hôte (adresse IP, `router-id`, réseaux annoncés en OSPF). Ansible déploie ensuite cette configuration et redémarre le service FRR.
 
 Cette approche évite la duplication de fichiers de configuration statiques et permet d'ajouter un routeur au labo par simple ajout d'un fichier de variables, sans modification du template ni des playbooks.
 
-Résultats
-Adjacences OSPF Full établies entre les trois routeurs (DR/BDR corrects)
-Routes apprises automatiquement de bout en bout (router1 ↔ router3 via router2)
-Idempotence validée : une ré-exécution des playbooks ne modifie pas un état déjà conforme
-Sauvegarde automatique et horodatée des configurations
-Problèmes rencontrés et résolutions
-Problème	Résolution
-Instabilité de GNS3/QEMU sous Windows (kernel panic, blocages de démarrage)	Migration vers Containerlab, solution conteneurisée plus légère et stable
-Erreurs réseau récurrentes avec Docker Desktop (bridge not found) lors du déploiement	Passage à Docker Engine natif sous WSL2
-Permission refusée en écriture sur /etc/frr/frr.conf	Ajout de become: true dans les playbooks concernés
-Absence de la commande service dans les conteneurs FRR	Utilisation de /usr/lib/frr/frrinit.sh restart
-Pistes d'amélioration
-Chiffrement des identifiants avec Ansible Vault
-Playbook d'audit de conformité avec détection automatique d'écarts
-Mise en place de règles de filtrage (ACL) entre sous-réseaux
-Extension à un scénario BGP en complément d'OSPF
+## Résultats
+
+- Adjacences OSPF `Full` établies entre les trois routeurs (DR/BDR corrects)
+- Routes apprises automatiquement de bout en bout (router1 ↔ router3 via router2)
+- Idempotence validée : une ré-exécution des playbooks ne modifie pas un état déjà conforme
+- Sauvegarde automatique et horodatée des configurations
+
+## Problèmes rencontrés et résolutions
+
+| Problème | Résolution |
+|---|---|
+| Instabilité de GNS3/QEMU sous Windows (kernel panic, blocages de démarrage) | Migration vers Containerlab, solution conteneurisée plus légère et stable |
+| Erreurs réseau récurrentes avec Docker Desktop (`bridge not found`) lors du déploiement | Passage à Docker Engine natif sous WSL2 |
+| Permission refusée en écriture sur `/etc/frr/frr.conf` | Ajout de `become: true` dans les playbooks concernés |
+| Absence de la commande `service` dans les conteneurs FRR | Utilisation de `/usr/lib/frr/frrinit.sh restart` |
+
+## Pistes d'amélioration
+
+- Chiffrement des identifiants avec Ansible Vault
+- Playbook d'audit de conformité avec détection automatique d'écarts
+- Mise en place de règles de filtrage (ACL) entre sous-réseaux
+- Extension à un scénario BGP en complément d'OSPF
+
+## Auteur
+
+Khaoula Zghal — Étudiante en Génie des Télécommunications, ENET'Com
