@@ -1,0 +1,28 @@
+---
+- name: Backup FRR configuration
+  hosts: routers
+  become: yes
+
+  tasks:
+
+    - name: Save configuration
+      command: vtysh -c "write"
+
+    - name: Get running configuration
+      command: vtysh -c "show running-config"
+      register: running
+
+    - name: Create local backup directory
+      become: false
+      delegate_to: localhost
+      file:
+        path: "{{ playbook_dir }}/../backup"
+        state: directory
+        mode: '0755'
+
+    - name: Save configuration locally
+      become: false
+      delegate_to: localhost
+      copy:
+        content: "{{ running.stdout }}"
+        dest: "{{ playbook_dir }}/../backup/{{ inventory_hostname }}.conf"

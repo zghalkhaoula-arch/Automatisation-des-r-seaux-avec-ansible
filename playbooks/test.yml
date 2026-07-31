@@ -1,0 +1,13 @@
+---
+- name: Test Ansible
+  hosts: routers
+  become: false
+
+  tasks:
+
+    - name: Afficher le hostname
+      command: hostname
+      register: resultat
+
+    - debug:
+        var: resultat.stdout

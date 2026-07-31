@@ -1,0 +1,5 @@
+frr_version: 8.4_git
+
+ospf_area: 0
+
+domain_name: localdomain

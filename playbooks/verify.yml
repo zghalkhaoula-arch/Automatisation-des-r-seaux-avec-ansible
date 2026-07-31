@@ -1,0 +1,54 @@
+---
+- name: Verify FRRouting Network
+  hosts: routers
+  become: yes
+
+  tasks:
+
+    - name: Get hostname
+      command: hostname
+      register: hostname_out
+
+    - name: Display hostname
+      debug:
+        var: hostname_out.stdout
+
+    - name: Show network interfaces
+      command: ip addr
+      register: interfaces
+
+    - name: Display interfaces
+      debug:
+        var: interfaces.stdout_lines
+
+    - name: Show OSPF neighbors
+      command: vtysh -c "show ip ospf neighbor"
+      register: ospf_neighbors
+
+    - name: Display OSPF neighbors
+      debug:
+        var: ospf_neighbors.stdout
+
+    - name: Show OSPF routes
+      command: vtysh -c "show ip route ospf"
+      register: ospf_routes
+
+    - name: Display OSPF routes
+      debug:
+        var: ospf_routes.stdout
+
+    - name: Show running configuration
+      command: vtysh -c "show running-config"
+      register: running_config
+
+    - name: Display running configuration
+      debug:
+        var: running_config.stdout
+
+    - name: Check FRRouting version
+      command: vtysh -c "show version"
+      register: frr_version
+
+    - name: Display FRRouting version
+      debug:
+        var: frr_version.stdout

@@ -1,0 +1,29 @@
+---
+- name: Test Variables
+  hosts: routers
+  gather_facts: false
+
+  tasks:
+
+    - name: Display hostname
+      debug:
+        var: hostname
+
+    - name: Display router ID
+      debug:
+        var: router_id
+
+    - name: Display interfaces
+      debug:
+        var: interfaces
+
+    - name: Display OSPF networks
+      debug:
+        var: ospf_networks
+
+    - name: Display common variables
+      debug:
+        msg:
+          - "FRR Version : {{ frr_version }}"
+          - "OSPF Area : {{ ospf_area }}"
+          - "Domain : {{ domain_name }}"

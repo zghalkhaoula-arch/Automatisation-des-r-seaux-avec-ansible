@@ -1,0 +1,14 @@
+hostname: router2
+
+router_id: 2.2.2.2
+
+interfaces:
+  - name: eth1
+    ip: 192.168.100.11/24
+
+  - name: eth2
+    ip: 192.168.101.11/24
+
+ospf_networks:
+  - 192.168.100.0/24
+  - 192.168.101.0/24

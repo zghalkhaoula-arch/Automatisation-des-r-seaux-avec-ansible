@@ -1,0 +1,64 @@
+name: frr-lab
+topology:
+  nodes:
+    router1:
+      kind: linux
+      image: frr-ssh
+      ports:
+        - "2221:22"
+      cmd: sleep infinity
+      cap-add:
+        - NET_ADMIN
+        - SYS_ADMIN
+        - NET_RAW
+      exec:
+        - mkdir -p /etc/frr
+        - touch /etc/frr/vtysh.conf
+        - chown frr:frrvty /etc/frr/vtysh.conf
+        - chmod 640 /etc/frr/vtysh.conf
+        - addgroup admin frrvty
+        - /usr/lib/frr/frrinit.sh start
+        - ip addr add 192.168.100.10/24 dev eth1
+        - /usr/sbin/sshd
+    router2:
+      kind: linux
+      image: frr-ssh
+      ports:
+        - "2222:22"
+      cmd: sleep infinity
+      cap-add:
+        - NET_ADMIN
+        - SYS_ADMIN
+        - NET_RAW
+      exec:
+        - mkdir -p /etc/frr
+        - touch /etc/frr/vtysh.conf
+        - chown frr:frrvty /etc/frr/vtysh.conf
+        - chmod 640 /etc/frr/vtysh.conf
+        - addgroup admin frrvty
+        - /usr/lib/frr/frrinit.sh start
+        - ip addr add 192.168.100.11/24 dev eth1
+        - ip addr add 192.168.101.11/24 dev eth2
+        - /usr/sbin/sshd
+    router3:
+      kind: linux
+      image: frr-ssh
+      ports:
+        - "2223:22"
+      cmd: sleep infinity
+      cap-add:
+        - NET_ADMIN
+        - SYS_ADMIN
+        - NET_RAW
+      exec:
+        - mkdir -p /etc/frr
+        - touch /etc/frr/vtysh.conf
+        - chown frr:frrvty /etc/frr/vtysh.conf
+        - chmod 640 /etc/frr/vtysh.conf
+        - addgroup admin frrvty
+        - /usr/lib/frr/frrinit.sh start
+        - ip addr add 192.168.101.12/24 dev eth1
+        - /usr/sbin/sshd
+  links:
+    - endpoints: ["router1:eth1", "router2:eth1"]
+    - endpoints: ["router2:eth2", "router3:eth1"]
