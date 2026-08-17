@@ -26,14 +26,17 @@ Ce projet applique les principes d'Infrastructure as Code (IaC) et de NetDevOps 
 
 ## Architecture
 
-```
-router1 ────── router2 ────── router3
-              (intermédiaire)
+                    OSPF
+     192.168.100.0/24        192.168.101.0/24
 
-  eth1                eth1  eth2              eth1
-192.168.100.10   192.168.100.11  192.168.101.11   192.168.101.12
-   └──────── 192.168.100.0/24 ────┘  └──── 192.168.101.0/24 ────┘
-```
+┌────────────┐              ┌────────────┐              ┌────────────┐
+│  Router 1  │──────────────│  Router 2  │──────────────│  Router 3  │
+│    FRR     │              │    FRR     │              │    FRR     │
+│            │              │            │              │            │
+│ 1.1.1.1    │              │ 2.2.2.2    │              │ 3.3.3.3    │
+└────────────┘              └────────────┘              └────────────┘
+192.168.100.10            192.168.100.11            192.168.101.12
+                            192.168.101.11
 
 Trois routeurs FRRouting, déployés en conteneurs via Containerlab et interconnectés par des liens virtuels, hébergés dans WSL2 (Ubuntu) avec Docker Engine natif.
 
