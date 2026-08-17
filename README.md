@@ -22,7 +22,7 @@ Automatisation de la configuration et du routage dynamique OSPF sur une infrastr
 
 ## Contexte
 
-Ce projet applique les principes d'Infrastructure as Code (IaC) et de NetDevOps à un environnement réseau simulé. Il couvre l'ensemble du cycle : déploiement d'une topologie réseau virtualisée, configuration automatisée du routage dynamique OSPF, vérification de l'état du réseau et sauvegarde des configurations — sans intervention manuelle sur les équipements.
+Ce projet applique les principes d'Infrastructure as Code (IaC) et de NetDevOps à un environnement réseau virtualisé. Il couvre le déploiement d'une topologie réseau, la configuration automatisée du routage dynamique OSPF, la vérification de l'état du réseau et la sauvegarde des configurations. L'objectif est de centraliser et automatiser les opérations d'administration réseau à l'aide d'Ansible.
 
 ## Architecture
 
